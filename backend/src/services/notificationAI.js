@@ -3,11 +3,12 @@ import fetch from "node-fetch";
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const MODEL = "gpt-4o-mini"; // pick an appropriate model available to you; or "gpt-4o" / "gpt-4" if available
 
+// Function to generate match notification
 async function generateMatchNotification({ lostItem, foundItem, score }) {
   if (!OPENAI_KEY) {
     return {
       subject: `Possible match for your lost item: ${lostItem.title}`,
-      message: `A found item posted by someone closely matches your lost item titled "${lostItem.title}". Confidence: ${(score*100).toFixed(0)}%.`
+      message: `A found item posted by someone closely matches your lost item titled "${lostItem.title}". Confidence: ${(score * 100).toFixed(0)}%.`
     };
   }
 
@@ -20,7 +21,7 @@ Context:
 - Found item title: ${foundItem.title}
 - Found item description: ${foundItem.description}
 - Found item location: ${foundItem.locationText}
-- Similarity score: ${(score*100).toFixed(1)}%
+- Similarity score: ${(score * 100).toFixed(1)}%
 
 Task:
 Return a JSON object exactly with keys "subject" and "message".
@@ -28,6 +29,12 @@ Keep the message 2-4 sentences, polite and instructive. Include a step to verify
 
 Example output:
 {"subject":"Possible match for your lost item","message":"..."}
+
+Additional instructions:
+- Emphasize the importance of verifying details before meeting
+- Suggest meeting in a public, safe location
+- Encourage the user to bring identification
+- Remind them to be cautious when sharing personal information
 `;
 
   try {
@@ -44,6 +51,12 @@ Example output:
         temperature: 0.2
       })
     });
+
+    if (!resp.ok) {
+      const errorData = await resp.json();
+      throw new Error(`OpenAI API error: ${resp.status} - ${errorData.error?.message || 'Unknown error'}`);
+    }
+
     const data = await resp.json();
     const text = data?.choices?.[0]?.message?.content?.trim();
 
@@ -62,9 +75,87 @@ Example output:
     console.error("notificationAI error", err);
     return {
       subject: `Possible match for your lost item: ${lostItem.title}`,
-      message: `A found item likely matches your lost item. Confidence: ${(score*100).toFixed(0)}%. Please verify details safely.`
+      message: `A found item likely matches your lost item. Confidence: ${(score * 100).toFixed(0)}%. Please verify details safely.`
     };
   }
 }
 
-export default { generateMatchNotification };
+// Function to generate item status update notification
+async function generateItemStatusUpdateNotification({ item, status }) {
+  if (!OPENAI_KEY) {
+    return {
+      subject: `Status update for your item: ${item.title}`,
+      message: `The status of your item "${item.title}" has been updated to "${status}".`
+    };
+  }
+
+  const prompt = `
+You are an assistant that writes short, polite notifications for a user about their item status.
+Context:
+- Item title: ${item.title}
+- Item description: ${item.description}
+- New status: ${status}
+
+Task:
+Return a JSON object exactly with keys "subject" and "message".
+Keep the message 1-2 sentences, polite and informative.
+`;
+
+  try {
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${OPENAI_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 150,
+        temperature: 0.2
+      })
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json();
+      throw new Error(`OpenAI API error: ${resp.status} - ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data = await resp.json();
+    const text = data?.choices?.[0]?.message?.content?.trim();
+
+    // Try to parse JSON from model output
+    try {
+      const parsed = JSON.parse(text);
+      return {
+        subject: parsed.subject || `Status update for your item: ${item.title}`,
+        message: parsed.message || text
+      };
+    } catch (err) {
+      // fallback
+      return { subject: `Status update for your item: ${item.title}`, message: text };
+    }
+  } catch (err) {
+    console.error("notificationAI error", err);
+    return {
+      subject: `Status update for your item: ${item.title}`,
+      message: `The status of your item "${item.title}" has been updated to "${status}".`
+    };
+  }
+}
+
+// Function to generate general notification
+async function generateGeneralNotification({ subject, message }) {
+  if (!OPENAI_KEY) {
+    return { subject, message };
+  }
+
+  // For general notifications, we don't need to use AI unless we want to enhance the message
+  return { subject, message };
+}
+
+export default {
+  generateMatchNotification,
+  generateItemStatusUpdateNotification,
+  generateGeneralNotification
+};

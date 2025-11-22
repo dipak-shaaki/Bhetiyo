@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -6,5 +7,10 @@ const UserSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
+
+// Method to compare password with hash
+UserSchema.methods.comparePassword = function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.passwordHash);
+};
 
 export default mongoose.model("User", UserSchema);

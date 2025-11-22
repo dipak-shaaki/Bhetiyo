@@ -7,6 +7,7 @@ const ItemSchema = new mongoose.Schema({
   description: { type: String, default: "" },
   locationText: { type: String, default: "" },
   imageUrl: { type: String, default: "" },       // store path or URL
+  thumbnailUrl: { type: String, default: "" },   // store thumbnail path or URL
   embedding: { type: [Number], default: [] },     // text embedding (array of floats)
   createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ["open", "closed"], default: "open" }
