@@ -1,48 +1,71 @@
-/* App.css - Minimal styles, most styling done with Tailwind classes */
+/* App.css - Custom styles for enhanced theme support */
 
-/* Add any custom styles here if needed */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --background-light: #f9fafb;
+  --background-dark: #1f2937;
+  --text-light: #111827;
+  --text-dark: #f9fafb;
+  --border-light: #e5e7eb;
+  --border-dark: #374151;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode variables */
+.dark {
+  --background-light: #1f2937;
+  --background-dark: #111827;
+  --text-light: #f9fafb;
+  --text-dark: #111827;
+  --border-light: #374151;
+  --border-dark: #e5e7eb;
+}
+
+/* Custom focus styles */
+.focus\:ring-gray-500:focus {
+  --tw-ring-color: #6b7280;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Enhanced button hover effect */
+.bg-black.hover\:bg-gray-800:hover {
+  background-color: #1f2937;
+}
+
+/* Responsive image */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Link hover effects */
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+
+/* Input focus states */
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+/* Container for the entire app */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

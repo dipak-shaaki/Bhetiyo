@@ -1,114 +1,106 @@
-import React, { useState } from 'react'
-import './App.css'
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './components/ThemeContext';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Stats from './components/Stats';
+import ItemForm from './components/ItemForm';
+import SignInPage from './components/SignInPage';
+import SignUpPage from './components/SignUpPage';
+import DashboardPage from './components/DashboardPage';
+import ItemDetailPage from './components/ItemDetailPage';
+import EditItemPage from './components/EditItemPage';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Wrapper component to ensure ThemeProvider is available in all routes
+const AppContent = () => {
+  const [activeTab, setActiveTab] = useState('lost');
+
+  const handleFormSubmit = (itemData) => {
+    // In a real app, you might want to update a global state or refresh the items list
+    console.log('Item created:', itemData);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center p-4">
-      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-indigo-600 p-6 text-white">
-          <h1 className="text-4xl font-bold text-center">Bhetiyo</h1>
-          <p className="text-center text-indigo-200 mt-2">
-            AI-powered Lost & Found Platform
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex flex-col">
+      <Navbar />
 
-        {/* Main Content */}
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Left Column */}
-            <div className="space-y-6">
-              <div className="bg-blue-50 p-6 rounded-xl">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Lost Something?</h2>
-                <p className="text-gray-600 mb-4">
-                  Post details about your lost item and let our AI find matches for you.
+      <Routes>
+        <Route path="/" element={
+          <main className="flex-grow py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  AI-Powered Lost & Found Platform
+                </h1>
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                  Report lost or found items and let our AI match them automatically
                 </p>
-                <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-                  Post Lost Item
-                </button>
               </div>
 
-              <div className="bg-green-50 p-6 rounded-xl">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Found Something?</h2>
-                <p className="text-gray-600 mb-4">
-                  Help someone find their lost item by posting what you found.
-                </p>
-                <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-                  Post Found Item
-                </button>
+              <div className="bg-white dark:bg-gray-700 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-600">
+                <div className="bg-gray-900 dark:bg-gray-800 p-6">
+                  <h2 className="text-2xl font-bold text-white text-center">
+                    {activeTab === 'lost' ? 'Report Lost Item' : 'Report Found Item'}
+                  </h2>
+                </div>
+
+                <div className="p-6">
+                  <div className="flex justify-center mb-6">
+                    <div className="inline-flex rounded-md shadow-sm" role="group">
+                      <button
+                        type="button"
+                        className={`px-6 py-3 text-sm font-medium rounded-l-lg transition-colors duration-200 ${activeTab === 'lost'
+                          ? 'bg-black dark:bg-white text-white dark:text-black'
+                          : 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500'
+                          }`}
+                        onClick={() => setActiveTab('lost')}
+                      >
+                        Lost Item
+                      </button>
+                      <button
+                        type="button"
+                        className={`px-6 py-3 text-sm font-medium rounded-r-lg transition-colors duration-200 ${activeTab === 'found'
+                          ? 'bg-black dark:bg-white text-white dark:text-black'
+                          : 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500'
+                          }`}
+                        onClick={() => setActiveTab('found')}
+                      >
+                        Found Item
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ItemForm no longer needs isLoggedIn prop */}
+                  <ItemForm activeTab={activeTab} onSubmit={handleFormSubmit} />
+                </div>
               </div>
-            </div>
 
-            {/* Right Column */}
-            <div className="space-y-6">
-              <div className="bg-purple-50 p-6 rounded-xl">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">How It Works</h2>
-                <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-start">
-                    <span className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">1</span>
-                    <span>Post lost or found items with details</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">2</span>
-                    <span>AI matches items based on similarity</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">3</span>
-                    <span>Get notified of potential matches</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">4</span>
-                    <span>Connect with finders/owners safely</span>
-                  </li>
-                </ul>
-              </div>
+              <Stats />
+            </div>
+          </main>
+        } />
 
-              <div className="bg-yellow-50 p-6 rounded-xl">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">AI Features</h2>
-                <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <span>Text embedding similarity matching</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <span>Location-based matching</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <span>Smart notification system</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/items/:id" element={<ItemDetailPage />} />
+        <Route path="/items/:id/edit" element={<EditItemPage />} />
+      </Routes>
 
-          {/* Stats Section */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-              <div className="text-3xl font-bold text-indigo-600">1000+</div>
-              <div className="text-gray-600">Items Recovered</div>
-            </div>
-            <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-              <div className="text-3xl font-bold text-green-600">500+</div>
-              <div className="text-gray-600">Happy Users</div>
-            </div>
-            <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-              <div className="text-3xl font-bold text-purple-600">95%</div>
-              <div className="text-gray-600">Match Accuracy</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="bg-gray-100 p-6 text-center text-gray-600">
-          <p>© 2025 bhetiyo. Helping people reconnect with their lost belongings.</p>
-        </div>
-      </div>
+      <Footer />
     </div>
-  )
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </Router>
+  );
 }
 
-export default App
+export default App;
