@@ -53,7 +53,6 @@ const processImage = async (req, res, next) => {
       .jpeg({ quality: 80 })
       .toFile(thumbnailPath);
 
-    // Add thumbnail info to request
     req.thumbnail = {
       path: `/uploads/thumbnails/${thumbnailName}`,
       filename: thumbnailName
